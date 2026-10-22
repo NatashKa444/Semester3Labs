@@ -1,0 +1,11 @@
+# Служебные файлы сборки CMake
+build/
+
+# Готовые программы
+Homework1
+Tests
+
+# Файлы редакторов и Windows
+.vscode/
+.idea/
+*Zone.Identifier
