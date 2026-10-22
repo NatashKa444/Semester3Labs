@@ -1,7 +1,6 @@
 #ifndef HOMEWORK1_UNQPTR_HPP
 #define HOMEWORK1_UNQPTR_HPP
 
-// UnqPtr — единственный владелец объекта (аналог std::unique_ptr).
 
 #include <stdexcept>
 #include <utility>

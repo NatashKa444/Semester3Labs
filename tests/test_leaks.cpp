@@ -1,5 +1,3 @@
-// Тесты на утечки: счётчик Counter::alive должен вернуться к 0; дополнительно проверяет санитайзер.
-
 #include "DynamicArray.hpp"
 #include "ShrdPtr.hpp"
 #include "UnqPtr.hpp"

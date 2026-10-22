@@ -1,5 +1,3 @@
-// Бенчмарк: каждый замер времени повторяется REPEATS раз, берётся среднее; память считает operator new.
-
 #include "Benchmark.hpp"
 
 #include <algorithm>

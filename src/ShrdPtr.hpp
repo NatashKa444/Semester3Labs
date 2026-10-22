@@ -1,7 +1,6 @@
 #ifndef HOMEWORK1_SHRDPTR_HPP
 #define HOMEWORK1_SHRDPTR_HPP
 
-// ShrdPtr — несколько владельцев одного объекта, счётчик в ControlBlock (аналог std::shared_ptr).
 
 #include <stdexcept>
 #include <utility>

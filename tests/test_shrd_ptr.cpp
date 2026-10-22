@@ -1,5 +1,3 @@
-// Тесты ShrdPtr. В каждом тесте одна проверка.
-
 #include "ShrdPtr.hpp"
 #include "test_framework.hpp"
 

@@ -1,5 +1,3 @@
-// Консольное меню: запуск всех тестов и бенчмарка.
-
 #include <cstdlib>
 #include <iostream>
 #include <limits>
@@ -21,6 +19,9 @@ void RunAllTests() {
 }
 
 int main() {
+    int* p = new int[100]; //пример для санитайзера
+
+    
     int choice = -1;
     while (choice != 0) {
         std::cout << "\n===== Homework1: умные указатели =====\n"

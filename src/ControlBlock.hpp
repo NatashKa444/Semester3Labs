@@ -1,7 +1,6 @@
 #ifndef HOMEWORK1_CONTROLBLOCK_HPP
 #define HOMEWORK1_CONTROLBLOCK_HPP
 
-// Блок управления для ShrdPtr/WeakPtr: адрес объекта, счётчики владельцев и функция удаления.
 
 #include <cstddef>
 

@@ -1,7 +1,6 @@
 #ifndef HOMEWORK1_WEAKPTR_HPP
 #define HOMEWORK1_WEAKPTR_HPP
 
-// WeakPtr — наблюдает за объектом, не владея им; нужен для разрыва циклических ссылок.
 
 #include "ControlBlock.hpp"
 #include "ShrdPtr.hpp"

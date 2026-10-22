@@ -1,5 +1,3 @@
-// Тесты UnqPtr. В каждом тесте одна проверка.
-
 #include "UnqPtr.hpp"
 #include "test_framework.hpp"
 

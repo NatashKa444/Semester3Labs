@@ -1,7 +1,6 @@
 #ifndef HOMEWORK1_TEST_FRAMEWORK_HPP
 #define HOMEWORK1_TEST_FRAMEWORK_HPP
 
-// Макросы для тестов: CHECK_EQUAL и CHECK_THROW печатают номер, вход, ожидаемое, полученное, файл и строку.
 
 #include <gtest/gtest.h>
 

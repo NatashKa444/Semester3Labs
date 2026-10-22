@@ -1,5 +1,3 @@
-// Тесты DynamicArray. В каждом тесте одна проверка.
-
 #include "DynamicArray.hpp"
 #include "test_framework.hpp"
 

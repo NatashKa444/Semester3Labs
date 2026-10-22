@@ -1,5 +1,3 @@
-// Тесты WeakPtr. В каждом тесте одна проверка.
-
 #include "WeakPtr.hpp"
 #include "test_framework.hpp"
 

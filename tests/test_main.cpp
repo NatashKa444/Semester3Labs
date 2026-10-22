@@ -1,5 +1,3 @@
-// Запуск всех тестов Google Test и вывод итога.
-
 #include <gtest/gtest.h>
 
 #include <iostream>

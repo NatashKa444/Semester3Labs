@@ -1,7 +1,6 @@
 #ifndef HOMEWORK1_DYNAMICARRAY_HPP
 #define HOMEWORK1_DYNAMICARRAY_HPP
 
-// Динамический массив, каждый элемент хранится в UnqPtr.
 
 #include <stdexcept>
 #include <utility>
