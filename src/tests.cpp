@@ -2,6 +2,7 @@
 
 #include <clocale>
 #include <iostream>
+#include <limits>
 #include <random>
 #include <sstream>
 #include <string>
@@ -460,7 +461,7 @@ TEST(OtherTypes, test56_print_operator) {
 }
 
 int Descending(const int& a, const int& b) {
-    return b - a;
+    return a < b ? 1 : (a > b ? -1 : 0);  // без b - a: разность может переполнить int
 }
 
 int CompareAsNumbers(const std::string& a, const std::string& b) {
@@ -990,6 +991,58 @@ TEST(Enumerator, test119_leaks) {
         }
     }
     CHECK(Counted::alive - before, 0);
+}
+
+TEST(Operators, test120_equal_different_insert_order) {
+    TEST_START("Оператор ==", "a={1, 2, 3}, b={3, 1, 2} (другой порядок вставки)", "a == b -> true");
+    IntTree a{1, 2, 3};
+    IntTree b{3, 1, 2};
+    CHECK(a == b, true);
+}
+
+TEST(Operators, test121_equal_false_for_different) {
+    TEST_START("Оператор == для разных деревьев", "a={1, 2, 3}, b={1, 2, 4}", "a == b -> false");
+    IntTree a{1, 2, 3};
+    IntTree b{1, 2, 4};
+    CHECK(a == b, false);
+}
+
+TEST(Operators, test122_not_equal) {
+    TEST_START("Оператор !=", "a={1, 2, 3}, b={1, 2}", "a != b -> true");
+    IntTree a{1, 2, 3};
+    IntTree b{1, 2};
+    CHECK(a != b, true);
+}
+
+TEST(Operators, test123_not_equal_false_for_equal) {
+    TEST_START("Оператор != для одинаковых деревьев", "a={5, 7}, b=копия a", "a != b -> false");
+    IntTree a{5, 7};
+    IntTree b = a;
+    CHECK(a != b, false);
+}
+
+TEST(Edge, test124_zero_and_negatives) {
+    TEST_START("Ноль и отрицательные", "{0, -1, 1, -5}, Remove(0)", "[-5, -1, 1]");
+    IntTree t{0, -1, 1, -5};
+    t.Remove(0);
+    CHECK(Show(t.ToArray()), std::string("[-5, -1, 1]"));
+}
+
+TEST(Edge, test125_int_limits_order) {
+    TEST_START("Граничные значения int", "{INT_MAX, 0, INT_MIN, -1}", "[-2147483648, -1, 0, 2147483647]");
+    IntTree t{std::numeric_limits<int>::max(), 0, std::numeric_limits<int>::min(), -1};
+    CHECK(Show(t.ToArray()), std::string("[-2147483648, -1, 0, 2147483647]"));
+}
+
+TEST(Edge, test126_int_limits_roundtrip) {
+    TEST_START("INT_MIN и INT_MAX в строку и обратно", "{INT_MIN, INT_MAX}", "то же дерево");
+    IntTree t{std::numeric_limits<int>::min(), std::numeric_limits<int>::max()};
+    CHECK(IntTree::Deserialize(t.Serialize()) == t, true);
+}
+
+TEST(Edge, test127_overflow_in_string) {
+    TEST_START("Переполнение int при чтении", "\"99999999999()()\" (больше INT_MAX)", "исключение ParseError");
+    CHECK_THROW(IntTree::Deserialize("99999999999()()"), ParseError);
 }
 
 class ShortPrinter : public ::testing::EmptyTestEventListener {

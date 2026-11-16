@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <ostream>
+#include <utility>
 
 #include "AvlTree.hpp"
 #include "DynamicArray.hpp"
@@ -27,7 +28,7 @@ public:
     using Pair = KeyValuePair<TKey, TValue>;
 
     Dictionary(KeyComparator compareKeys = DefaultCompare<TKey>)
-        : tree_(MakePairComparator(compareKeys)) {}
+        : tree_(MakePairComparator(std::move(compareKeys))) {}
 
     std::size_t GetCount() const { return tree_.GetCount(); }
     bool IsEmpty() const { return tree_.IsEmpty(); }
@@ -94,10 +95,14 @@ private:
 
     static Pair Probe(const TKey& key) { return Pair{key, TValue{}}; }
 
-    static typename AvlTree<Pair>::Comparator MakePairComparator(const KeyComparator& compareKeys) {
+    // compareKeys принимаем ПО ЗНАЧЕНИЮ (это уже своя копия) и переносим её в лямбду через std::move:
+    // лямбда хранит компаратор у себя, поэтому ссылка на чужой объект тут не нужна, а лишней копии нет.
+    static typename AvlTree<Pair>::Comparator MakePairComparator(KeyComparator compareKeys) {
         if (!compareKeys) {
             throw TreeException("Компаратор ключей не задан");
         }
-        return [compareKeys](const Pair& a, const Pair& b) { return compareKeys(a.key, b.key); };
+        return [compareKeys = std::move(compareKeys)](const Pair& a, const Pair& b) {
+            return compareKeys(a.key, b.key);
+        };
     }
 };

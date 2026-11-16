@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <cstdlib>
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -210,7 +209,13 @@ private:
                 break;
             }
             case 11: std::cout << "  " << tree_.Serialize() << "\n"; break;
-            case 12: tree_ = Tree::Deserialize(ReadLine("Строка: ")); Show(tree_); break;
+            case 12: {
+                Tree read = Tree::Deserialize(ReadLine("Строка: "));
+                CompareWithCurrent(read);
+                tree_ = std::move(read);
+                Show(tree_);
+                break;
+            }
             case 13: tree_.Clear(); std::cout << "  Очищено.\n"; break;
             case 14: {
                 std::string order = ReadLine("Порядок (К — корень, Л — левое, П — правое), например КЛП: ");
@@ -226,7 +231,9 @@ private:
             }
             case 16: {
                 std::string format = ReadFormat();
-                tree_ = Tree::Deserialize(ReadLine("Строка: "), format);
+                Tree read = Tree::Deserialize(ReadLine("Строка: "), format);
+                CompareWithCurrent(read);
+                tree_ = std::move(read);
                 Show(tree_);
                 break;
             }
@@ -265,9 +272,18 @@ private:
         }
     }
 
+    void CompareWithCurrent(const Tree& other) const {
+        if (other == tree_) {
+            std::cout << "  Совпадает с текущим деревом (оператор ==).\n";
+        } else if (other != tree_) {
+            std::cout << "  Отличается от текущего дерева (оператор !=).\n";
+        }
+    }
+
     void Offer(Tree result) {
         std::cout << "  Результат:\n";
         Show(result);
+        CompareWithCurrent(result);
         if (ReadLine("  Сделать его текущим деревом? (д/н): ") == "д") tree_ = std::move(result);
     }
 
@@ -339,7 +355,7 @@ private:
 DynamicArray<BenchmarkResult> lastResults;
 
 void BenchmarkMenu() {
-    std::string line = ReadLine("Размеры N через пробел (Enter — 1000 10000 100000 1000000): ");
+    std::string line = ReadLine("Размеры N через пробел (Enter — 1000 3000 10000 30000 100000 300000 1000000): ");
     DynamicArray<long long> sizes;
     std::istringstream in(line);
     std::string word;
@@ -359,13 +375,14 @@ void BenchmarkMenu() {
         }
     }
     if (sizes.GetSize() == 0) {
-        long long defaultSizes[] = {1000, 10000, 100000, 1000000};
-        sizes = DynamicArray<long long>(defaultSizes, 4);
+        long long defaultSizes[] = {1000, 3000, 10000, 30000, 100000, 300000, 1000000};
+        sizes = DynamicArray<long long>(defaultSizes, 7);
     }
     lastResults = RunBenchmark(sizes);
     PrintResults(lastResults);
-    SaveResultsCsv(lastResults, "results.csv");
-    std::cout << "\nРезультаты сохранены в results.csv. Графики: пункт 6 или команда python3 plot.py results.csv\n";
+    if (SaveResultsCsv(lastResults, "results.csv")) {
+        DrawPlot("results.csv", "benchmark.png");
+    }
 }
 
 void ChartsMenu() {
@@ -373,10 +390,9 @@ void ChartsMenu() {
         std::cout << "  Замеров ещё не было. Сначала выберите пункт 5.\n";
         return;
     }
-    SaveResultsCsv(lastResults, "results.csv");
-    if (std::system("python3 plot.py results.csv") != 0) {
-        std::cout << "  Не получилось построить графики. Нужен Python с matplotlib:\n"
-                  << "  sudo apt install python3-matplotlib\n";
+    PrintResults(lastResults);
+    if (SaveResultsCsv(lastResults, "results.csv")) {
+        DrawPlot("results.csv", "benchmark.png");
     }
 }
 
@@ -390,8 +406,8 @@ int main() {
                       << "2. Дерево вещественных чисел\n"
                       << "3. Дерево строк\n"
                       << "4. Словарь (слово -> перевод)\n"
-                      << "5. Замеры: вставка и удаление одного элемента\n"
-                      << "6. Графики последних замеров (Python)\n"
+                      << "5. Замеры скорости (таблица + график benchmark.png через Python)\n"
+                      << "6. Показать последние замеры и перерисовать график\n"
                       << "0. Выход\n";
             switch (ReadNumber("> ", 0, 6)) {
                 case 0: return 0;

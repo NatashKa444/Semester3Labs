@@ -4,6 +4,7 @@ build/
 # Готовые программы
 Laba1
 Tests
+LeakDemo
 
 # Файлы редакторов и Windows
 .vscode/

@@ -1,46 +1,45 @@
+"""График замеров AVL-дерева: время вставки и удаления ОДНОГО элемента в зависимости от N.
+
+Запуск: python3 plot.py [results.csv] [benchmark.png]
+Программа Laba1 вызывает его сама после замеров (пункт 5 меню).
+"""
 import csv
 import sys
 
 import matplotlib
 
-matplotlib.use("Agg")
+matplotlib.use("Agg")  # рисуем сразу в файл, окно не нужно
 import matplotlib.pyplot as plt
 
-path = sys.argv[1] if len(sys.argv) > 1 else "results.csv"
-with open(path, encoding="utf-8") as f:
+csv_path = sys.argv[1] if len(sys.argv) > 1 else "results.csv"
+png_path = sys.argv[2] if len(sys.argv) > 2 else "benchmark.png"
+
+with open(csv_path, encoding="utf-8") as f:
     rows = list(csv.DictReader(f))
 if not rows:
-    sys.exit("В " + path + " нет данных")
+    sys.exit("В файле нет замеров")
 
-sizes = [int(r["N"]) for r in rows]
+n = [int(r["n"]) for r in rows]
+insert_ns = [float(r["insert_ns"]) for r in rows]
+remove_ns = [float(r["remove_ns"]) for r in rows]
 
+plt.figure(figsize=(9, 5.5))
+plt.plot(n, insert_ns, marker="o", linewidth=2, label="вставка одного элемента")
+plt.plot(n, remove_ns, marker="s", linewidth=2, label="удаление одного элемента")
 
-def column(name):
-    return [float(r[name]) for r in rows]
+for x, y in zip(n, insert_ns):
+    plt.annotate(f"{y:.0f}", (x, y), textcoords="offset points", xytext=(0, 8), ha="center", fontsize=8)
+for x, y in zip(n, remove_ns):
+    plt.annotate(f"{y:.0f}", (x, y), textcoords="offset points", xytext=(0, -14), ha="center", fontsize=8)
 
-
-fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-charts = [
-    (axes[0], "add", "Вставка одного элемента", "tab:blue"),
-    (axes[1], "remove", "Удаление одного элемента", "tab:red"),
-]
-for ax, key, title, color in charts:
-    median = column(key + "_median_ns")
-    avg = column(key + "_avg_ns")
-    low = column(key + "_min_ns")
-    ax.plot(sizes, median, "o-", color=color, linewidth=2, label="медиана")
-    ax.plot(sizes, avg, "^:", color=color, alpha=0.7, label="среднее")
-    ax.plot(sizes, low, "s--", color=color, alpha=0.4, label="минимум")
-    for x, y in zip(sizes, median):
-        ax.annotate(f"{y:.0f}", (x, y), textcoords="offset points", xytext=(0, 8), ha="center")
-    ax.set_xscale("log")
-    ax.set_ylim(bottom=0)
-    ax.set_title(title + " в AVL-дерево из N элементов")
-    ax.set_xlabel("N, элементов в дереве (логарифмическая шкала)")
-    ax.set_ylabel("время одной операции, нс")
-    ax.grid(True, which="both", alpha=0.3)
-    ax.legend()
-
-fig.tight_layout()
-fig.savefig("benchmark.png", dpi=150)
-print("График сохранён в benchmark.png")
+plt.xscale("log")
+plt.xlabel("Количество элементов в дереве N (логарифмическая шкала)")
+plt.ylabel("Среднее время одной операции, нс")
+total = rows[0].get("measurements", "?")
+plt.title(f"AVL-дерево из N элементов: вставка и удаление одного элемента\n(среднее по {total} замерам на каждое N)")
+plt.grid(True, which="both", alpha=0.3)
+plt.ylim(bottom=0)
+plt.legend()
+plt.tight_layout()
+plt.savefig(png_path, dpi=130)
+print(f"  График сохранён в {png_path}")

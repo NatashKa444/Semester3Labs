@@ -197,14 +197,14 @@ std::unique_ptr<IEnumerator<T>> AvlTree<T>::GetEnumerator() const {
 }
 
 template <class T>
-AvlTree<T>::AvlTree(Comparator compare) : compare_(compare) {
+AvlTree<T>::AvlTree(Comparator compare) : compare_(std::move(compare)) {
     if (!compare_) {
         throw TreeException("Компаратор не задан");
     }
 }
 
 template <class T>
-AvlTree<T>::AvlTree(std::initializer_list<T> items, Comparator compare) : AvlTree(compare) {
+AvlTree<T>::AvlTree(std::initializer_list<T> items, Comparator compare) : AvlTree(std::move(compare)) {
     for (const T& item : items) {
         Add(item);
     }
@@ -526,14 +526,12 @@ template <class T>
 typename AvlTree<T>::NodePtr AvlTree<T>::ReadFormatted(const std::string& text, std::size_t& pos, const Format& f) {
     NodePtr children[2];
     std::string raw;
-    std::size_t valuePos = 0;
     for (int g = 0; g < 3; ++g) {
         if (pos >= text.size() || text[pos] != f.open[g]) {
             throw ParseError(std::string("Нужна '") + f.open[g] + "'", pos);
         }
         ++pos;
         if (f.part[g] == 'N') {
-            valuePos = pos;
             while (pos < text.size() && text[pos] != f.close[g]) {
                 if (text[pos] == '\\') {
                     ++pos;
@@ -557,7 +555,7 @@ typename AvlTree<T>::NodePtr AvlTree<T>::ReadFormatted(const std::string& text, 
     try {
         node = std::make_unique<Node>(ValueCodec<T>::FromText(raw));
     } catch (const TreeException& e) {
-        throw ParseError(e.what(), valuePos);
+        throw ParseError(e.what());
     }
     node->left = std::move(children[0]);
     node->right = std::move(children[1]);
@@ -845,7 +843,6 @@ typename AvlTree<T>::NodePtr AvlTree<T>::ReadNode(const std::string& text, std::
         return nullptr;
     }
 
-    std::size_t start = pos;
     std::string raw;
     while (pos < text.size() && text[pos] != '(') {
         if (text[pos] == ')') {
@@ -867,7 +864,7 @@ typename AvlTree<T>::NodePtr AvlTree<T>::ReadNode(const std::string& text, std::
     try {
         node = std::make_unique<Node>(ValueCodec<T>::FromText(raw));
     } catch (const TreeException& e) {
-        throw ParseError(e.what(), start);
+        throw ParseError(e.what());
     }
     node->left = ReadChild(text, pos);
     node->right = ReadChild(text, pos);
