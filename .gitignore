@@ -1,0 +1,14 @@
+build/
+
+Laba2
+Tests
+results.csv
+benchmark.png
+
+.vscode/
+.idea/
+*Zone.Identifier
+*.zip
+
+Описание_ЛР2.md
+ТЗ/
